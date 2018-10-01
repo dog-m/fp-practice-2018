@@ -3,6 +3,8 @@ import Task1_1
 import Task1_2
 
 main = do
+  -- тесты для задания №1
+
   putStrLn "Task1_1:"
   -- (A - 1) * 2 - A * (3 + 4 + 5 - 6 * 7) = (A - 1) * 2 - A * (-30)
   let a = (Variable "A" |-| IntConstant 1) |*| IntConstant 2 |-| Variable "A" |*| (IntConstant 3 |+| IntConstant 4 |+| IntConstant 5 |-| IntConstant 6 |*| IntConstant 7)
@@ -19,7 +21,7 @@ main = do
   putStrLn "c:";          print $ c;          putStrLn "---"
   putStrLn "evaluate c:"; print $ evaluate c; putStrLn "---"
 
-  -- ���� ��� ������� �2
+  -- тесты для задания №2
 
   putStrLn "Sine tests:"
   putStr "sin( 0   ) = "; print $ Task1_2.sin ( 0   )

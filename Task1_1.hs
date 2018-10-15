@@ -34,12 +34,13 @@ replaceVar varName replacement expression = case expression of
 -- если оно состоит только из констант
 evaluate :: Term -> Term
 evaluate expression = case expression of
-  BinaryTerm left right op -> do
-    let l = evaluate left
-    let r = evaluate right
-    case (l, r) of
+  BinaryTerm left right op ->
+    let
+      l = evaluate left
+      r = evaluate right
+    in case (l, r) of
       -- для упрощения выражения, если не можем посчитать
-      (            _, IntConstant 0) | op == Plus || op == Minus -> l
+      (            _, IntConstant 0) | op /= Times -> l
       (            _, IntConstant 0) | op == Times -> IntConstant 0
       (            _, IntConstant 1) | op == Times -> l
       (IntConstant 0,             _) | op == Plus  -> r
@@ -51,6 +52,6 @@ evaluate expression = case expression of
           Plus  -> IntConstant $ a + b
           Minus -> IntConstant $ a - b
           Times -> IntConstant $ a * b
-      -- не можем упростить или вычислить
+      -- не можем упростить или вычислить - возвращаем то, что упростилось ранее
       _ -> BinaryTerm l r op
   _ -> expression

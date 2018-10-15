@@ -28,6 +28,9 @@ main = do
   putStr "sin( pi/2) = "; print $ Task1_2.sin ( pi/2)
   putStr "sin(-pi/2) = "; print $ Task1_2.sin (-pi/2)
   putStr "sin( pi  ) = "; print $ Task1_2.sin ( pi  )
+  
+  putStr "sin( 7*pi) = "; print $ Task1_2.sin ( 7*pi)
+  putStr "sin(-9*pi) = "; print $ Task1_2.sin (-9*pi)
   putStrLn ""
 
   putStrLn "Cosine tests:"
@@ -35,6 +38,9 @@ main = do
   putStr "cos( pi/2) = "; print $ Task1_2.cos ( pi/2)
   putStr "cos(-pi/2) = "; print $ Task1_2.cos (-pi/2)
   putStr "cos( pi  ) = "; print $ Task1_2.cos ( pi  )
+  
+  putStr "cos( 7*pi) = "; print $ Task1_2.cos ( 7*pi)
+  putStr "cos(-9*pi) = "; print $ Task1_2.cos (-9*pi)
   putStrLn ""
 
   putStrLn "GCD tests:"
@@ -53,7 +59,7 @@ main = do
   putStr "pow(2, 3) = "; print $ Task1_2.pow 2 3
   putStr "pow(2, 4) = "; print $ Task1_2.pow 2 4
   putStr "pow(2, 5) = "; print $ Task1_2.pow 2 5
-  putStr "pow(2, 5) = "; print $ Task1_2.pow 2 10
+  putStr "pow(2,10) = "; print $ Task1_2.pow 2 10
   putStr "pow(2,-8) = "; print $ Task1_2.pow 2 (-8)
   putStrLn ""
 

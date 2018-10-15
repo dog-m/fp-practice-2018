@@ -4,31 +4,29 @@ import Todo(todo)
 
 -- синус числа (формула Тейлора)
 sin :: Double -> Double
-sin x = do
-  let fact i = if i < 1 then 1 else i * fact(i - 1)
-  let sin' n =
-        if n < 0
-          then 0
-          else sin'(n - 1) + (-1)^n * x^(2 * n + 1) / fromIntegral (fact (2 * n + 1))
-  sin' 11
+sin x = sin' x 1e-30 1 x
+  where
+    sin' _ eps _ q | abs q < eps = 0
+    sin' x eps i q = q + sin' x eps (i + 1) (q * f)
+      where
+        f = (-1) * x * x / ( (2 * i) * (2 * i + 1) )
 
 -- косинус числа (формула Тейлора)
 cos :: Double -> Double
-cos x = do
-  let fact i = if i < 1 then 1 else i * fact(i - 1)
-  let cos' n =
-        if n < 0
-          then 0
-          else cos'(n - 1) + (-1)^n * x^(2 * n) / fromIntegral (fact (2 * n))
-  cos' 11
+cos x = cos' x 1e-30 1 1
+  where
+    cos' _ eps _ q | abs q < eps = 0
+    cos' x eps i q = q + cos' x eps (i + 1) (q * f)
+      where
+        f = (-1) * x * x / ( (2 * i) * (2 * i - 1) )
 
 -- наибольший общий делитель двух чисел
 gcd :: Integer -> Integer -> Integer
-gcd x y = do
-  let gcd_sorted a b = if b == 0 then a else gcd_sorted b (a `mod` b)
-  if x > y
-    then gcd_sorted y x
-    else gcd_sorted x y
+gcd x y | x > y = Task1_2.gcd y x
+gcd x y = gcd_sorted x y
+  where
+    gcd_sorted a 0 = a
+    gcd_sorted a b = gcd_sorted b (a `mod` b)
 
 -- существует ли полный целочисленный квадрат в диапазоне [from, to)?
 doesSquareBetweenExist :: Integer -> Integer -> Bool
@@ -42,28 +40,19 @@ isDateCorrect day month year = todo
 -- возведение числа в степень, duh
 -- готовые функции и плавающую арифметику использовать нельзя
 pow :: Integer -> Integer -> Integer
-pow x y = do
-  let pow_plus a b =
-        if b == 0
-          then 1
-          else a * (pow_plus a (b - 1))
-  if y < 0
-    then 0
-    else pow_plus x y
+pow _ 0         = 1
+pow _ y | y < 0 = 0
+pow x y | y `mod` 2 == 1 = x * pow x (y - 1)
+pow x y = (pow x (y `div` 2)) * (pow x (y `div` 2))
 
 -- является ли данное число простым?
 isPrime :: Integer -> Bool
-isPrime x = do
-  let checkPrimeRecursive i = 
-        if i >= x
-          then True
-          else
-            if (Task1_2.gcd x i) > 1
-              then False
-              else checkPrimeRecursive (i+1)
-  if x < 1
-    then False
-    else checkPrimeRecursive 2
+isPrime x | x < 1 = False
+isPrime x = check 2
+  where
+    check i | i * i > x             = True
+    check i | (Task1_2.gcd x i) > 1 = False
+    check i = check (i + 1)
 
 type Point2D = (Double, Double)
 

@@ -38,20 +38,18 @@ evaluate expression = case expression of
     let
       l = evaluate left
       r = evaluate right
-    in case (l, r) of
+    in case (l, r, op) of
       -- для упрощения выражения, если не можем посчитать
-      (            _, IntConstant 0) | op /= Times -> l
-      (            _, IntConstant 0) | op == Times -> IntConstant 0
-      (            _, IntConstant 1) | op == Times -> l
-      (IntConstant 0,             _) | op == Plus  -> r
-      (IntConstant 0,             _) | op == Times -> IntConstant 0
-      (IntConstant 1,             _) | op == Times -> r
+      (            _, IntConstant 0, Times) -> IntConstant 0
+      (            _, IntConstant 0,     _) -> l
+      (            _, IntConstant 1, Times) -> l
+      (IntConstant 0,             _, Plus ) -> r
+      (IntConstant 0,             _, Times) -> IntConstant 0
+      (IntConstant 1,             _, Times) -> r
       -- непосредственно вычисление
-      (IntConstant a, IntConstant b) -> 
-        case op of
-          Plus  -> IntConstant $ a + b
-          Minus -> IntConstant $ a - b
-          Times -> IntConstant $ a * b
+      (IntConstant a, IntConstant b, Plus ) -> IntConstant $ a + b
+      (IntConstant a, IntConstant b, Minus) -> IntConstant $ a - b
+      (IntConstant a, IntConstant b, Times) -> IntConstant $ a * b
       -- не можем упростить или вычислить - возвращаем то, что упростилось ранее
       _ -> BinaryTerm l r op
   _ -> expression

@@ -4,21 +4,27 @@ import Todo(todo)
 
 -- синус числа (формула Тейлора)
 sin :: Double -> Double
-sin x = sin' x 1e-30 1 x
+sin x = sin' (norm x) 1e-30 1 x
   where
+    norm a | a >  2 * pi = norm (a - pi - pi)
+    norm a | a < -2 * pi = norm (a + pi + pi)
+    norm a = a
     sin' _ eps _ q | abs q < eps = 0
-    sin' x eps i q = q + sin' x eps (i + 1) (q * f)
+    sin' a eps i q = q + sin' a eps (i + 1) (q * f)
       where
-        f = (-1) * x * x / ( (2 * i) * (2 * i + 1) )
+        f = (-1) * a * a / ( (2 * i) * (2 * i + 1) )
 
 -- косинус числа (формула Тейлора)
 cos :: Double -> Double
-cos x = cos' x 1e-30 1 1
+cos x = cos' (norm x) 1e-30 1 1
   where
+    norm a | a >  2 * pi = norm (a - pi - pi)
+    norm a | a < -2 * pi = norm (a + pi + pi)
+    norm a = a
     cos' _ eps _ q | abs q < eps = 0
-    cos' x eps i q = q + cos' x eps (i + 1) (q * f)
+    cos' a eps i q = q + cos' a eps (i + 1) (q * f)
       where
-        f = (-1) * x * x / ( (2 * i) * (2 * i - 1) )
+        f = (-1) * a * a / ( (2 * i) * (2 * i - 1) )
 
 -- наибольший общий делитель двух чисел
 gcd :: Integer -> Integer -> Integer

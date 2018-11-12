@@ -2,6 +2,8 @@ module Main where
 import Task1_1
 import Task1_2
 
+import Task3_2
+
 main = do
   -- тесты для задания №1
 
@@ -75,3 +77,13 @@ main = do
   putStr "isPrime( 1) = "; print $ Task1_2.isPrime (  1)
   putStr "isPrime( 0) = "; print $ Task1_2.isPrime (  0)
   putStr "isPrime(-1) = "; print $ Task1_2.isPrime ( -1)
+  putStrLn ""
+
+
+
+  putStrLn "Task3_2"
+  let d = ['a'..'e']
+  putStr "d = "; print $ d
+  let f = listToRList d
+  putStr "listToRList(d) = "; print $ f
+  putStr "rlistToList(f) = "; print $ rlistToList f

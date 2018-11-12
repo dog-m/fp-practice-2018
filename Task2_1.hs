@@ -14,41 +14,44 @@ emptyTree = Leaf
 
 -- Содержится ли заданный ключ в дереве?
 contains :: TreeMap v -> Integer -> Bool
-contains t k = conts t k
-  where
-    conts Leaf _ = False
-    conts (Node key _ left right) k
-      | key == k = True
-      | k < key  = conts left  k
-      | k > key  = conts right k
+contains Leaf _ = False
+contains (Node key _ left right) k
+  | key == k = True
+  | k < key  = contains left  k
+  | k > key  = contains right k
 
 -- Значение для заданного ключа
 lookup :: Integer -> TreeMap v -> v
-lookup k t = look k t
-  where
-    look k (Node key value left right)
-      | key == k = value
-      | k < key  = look left  k
-      | k > key  = look right k
-    look _ Leaf  = error "Key dont exist"
+lookup _ Leaf  = error "Key dont exist"
+lookup k (Node key value left right)
+  | key == k = value
+  | k < key  = lookup left  k
+  | k > key  = lookup right k
 
 -- Вставка пары (ключ, значение) в дерево
 insert :: (Integer, v) -> TreeMap v -> TreeMap v
-insert (k, v) t = ins k v t
-  where
-    ins k v (Node key value left right)
-      | key == k = Node key v left right -- коллизия, перезаписываем
-      | k < key  = Node key value (ins k v left) right
-      | k > key  = Node key value left (ins k v right)
-    ins k v Leaf = Node k v Leaf Leaf
+insert (k, v) Leaf = Node k v Leaf Leaf
+insert (k, v) (Node key value left right)
+  | key == k = Node key v left right -- коллизия, перезаписываем
+  | k < key  = Node key value (insert (k, v) left) right
+  | k > key  = Node key value left (insert (k, v) right)
 
 -- Удаление элемента по ключу
 remove :: Integer -> TreeMap v -> TreeMap v
-remove i t = rm i t
-  where
-    rm _ Leaf = error "Nothing to remove"
-    rm k (Node key value left right)
-      | k < key = rm k 
+remove _ Leaf = error "Nothing to remove"
+remove k (Node key value left right)
+  | k < key  = Node key value (remove k left) right
+  | k > key  = Node key value left (remove k right)
+  | k == key =
+    case (left, right) of
+      (Leaf, Leaf) -> Leaf
+      (_   , Leaf) -> left
+      (Leaf, _   ) -> right
+      (_   , _   ) -> insertLeft left right
+        where
+          insertLeft subtree (Node k v l r) = case l of
+            Leaf         -> Node k v subtree r
+            Node _ _ _ _ -> Node k v (insertLeft subtree l) r
 
 -- Поиск ближайшего снизу ключа относительно заданного
 nearestLE :: Integer -> TreeMap v -> (Integer, v)

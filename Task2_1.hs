@@ -25,16 +25,16 @@ lookup :: Integer -> TreeMap v -> v
 lookup _ Leaf  = error "Key dont exist"
 lookup k (Node key value left right)
   | key == k = value
-  | k < key  = lookup left  k
-  | k > key  = lookup right k
+  | k < key  = lookup k left
+  | k > key  = lookup k right
 
 -- Вставка пары (ключ, значение) в дерево
 insert :: (Integer, v) -> TreeMap v -> TreeMap v
 insert (k, v) Leaf = Node k v Leaf Leaf
-insert (k, v) (Node key value left right)
+insert p@(k, v) (Node key value left right)
   | key == k = Node key v left right -- коллизия, перезаписываем
-  | k < key  = Node key value (insert (k, v) left) right
-  | k > key  = Node key value left (insert (k, v) right)
+  | k < key  = Node key value (insert p left) right
+  | k > key  = Node key value left (insert p right)
 
 -- Удаление элемента по ключу
 remove :: Integer -> TreeMap v -> TreeMap v
@@ -55,7 +55,23 @@ remove k (Node key value left right)
 
 -- Поиск ближайшего снизу ключа относительно заданного
 nearestLE :: Integer -> TreeMap v -> (Integer, v)
-nearestLE i t = todo
+nearestLE _ Leaf = error "Empty tree"
+nearestLE i tree@(Node key value left right)
+  | i == key  = (key, value)
+  | otherwise =
+    if distance_to left_value < distance_to right_value
+    then (left_key,  left_value)
+    else (right_key, right_value)
+  where
+    (Node left_key  left_value  _ _) = get_min_from left  tree
+    (Node right_key right_value _ _) = get_min_from right tree
+    distance_to x = if x < i then (i - x) else (x - i)
+    get_min_from subtree@(Node _ subtree_v l _) alternative@(Node _ alternative_v _ _) = 
+      get_min_from l (
+        if distance_to subtree_v < distance_to alternative_v
+        then subtree
+        else alternative)
+    get_min_from Leaf alternative = alternative_node
 
 -- Построение дерева из списка пар
 treeFromList :: [(Integer, v)] -> TreeMap v
@@ -64,12 +80,11 @@ treeFromList lst =
 
 -- Построение списка пар из дерева
 listFromTree :: TreeMap v -> [(Integer, v)]
-listFromTree t =
-  case t of
-    Leaf                = []
-    Node k v Leaf Leaf  = [(k, v)]
-    Node k v left right = (listFromTree left) ++ [(k, v)] ++ (listFromTree right)
+listFromTree Leaf                = []
+listFromTree Node k v Leaf Leaf  = [(k, v)]
+listFromTree Node k v left right = (listFromTree left) ++ [(k, v)] ++ (listFromTree right)
 
 -- Поиск k-той порядковой статистики дерева 
 kMean :: Integer -> TreeMap v -> (Integer, v)
-kMean i t = todo
+kMean _ Leaf = error "Empty tree"
+kMean k t@(Node key value left right) = todo

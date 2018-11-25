@@ -66,12 +66,15 @@ nearestLE i tree@(Node key value left right)
     (Node left_key  left_value  _ _) = get_min_from left  tree
     (Node right_key right_value _ _) = get_min_from right tree
     distance_to x = if x < i then (i - x) else (x - i)
-    get_min_from subtree@(Node _ subtree_v l _) alternative@(Node _ alternative_v _ _) = 
-      get_min_from l (
-        if distance_to subtree_v < distance_to alternative_v
+    get_min_from Leaf               alt = alt
+    get_min_from sub@(Node k _ l r) alt
+      | k == key = sub
+      | k < key  = get_min_from l $ get_alternative sub alt
+      | k > key  = get_min_from r $ get_alternative sub alt
+    get_alternative subtree@(Node _ subtree_v _ _) alternative@(Node _ alternative_v _ _) = 
+      if distance_to subtree_v < distance_to alternative_v
         then subtree
-        else alternative)
-    get_min_from Leaf alternative = alternative_node
+        else alternative
 
 -- Построение дерева из списка пар
 treeFromList :: [(Integer, v)] -> TreeMap v
@@ -87,4 +90,5 @@ listFromTree Node k v left right = (listFromTree left) ++ [(k, v)] ++ (listFromT
 -- Поиск k-той порядковой статистики дерева 
 kMean :: Integer -> TreeMap v -> (Integer, v)
 kMean _ Leaf = error "Empty tree"
-kMean k t@(Node key value left right) = todo
+-- не очень эффективный вариант: kMean k t = last $ take k $ listFromTree t
+kMean k t = todo

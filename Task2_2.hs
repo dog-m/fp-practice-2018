@@ -29,7 +29,9 @@ reverse lst = foldl f [] lst where f t h = h:t
 
 -- Отображение элементов списка
 map :: (a -> b) -> [a] -> [b]
-map func list = foldr ( \x a -> ((func x):a) ) [] list
+map func list = foldr foo [] list
+  where
+    foo x a = (func x):a
 
 -- Произведение всех элементов списка
 product :: [Integer] -> Integer
@@ -44,7 +46,12 @@ catMaybes lst = foldl f [] lst
 
 -- Диагональ матрицы
 diagonal :: [[a]] -> [a]
-diagonal = todo
+diagonal m = fst $ foldl foo ([], 0) m
+  where
+    foo (result, n) lst
+      | (length lst) <= n = (result, n) -- если матрица прямоугольная и ширина меньше высоты
+      | otherwise         = (result ++ [lst !! n], (n + 1))
+    length list = foldl (\ n _ -> 1 + n) 0 list
 
 -- Фильтр для всех элементов, не соответствующих предикату
 filterNot :: (a -> Bool) -> [a] -> [a]
@@ -55,14 +62,16 @@ filterNot foo (h:t) =
 
 -- Поиск элемента в списке
 elem :: (Eq a) => a -> [a] -> Bool
-elem = todo
+elem x list = foldl foo False list
+  where
+    foo acc element = acc || (element == x)
 
 -- Список чисел в диапазоне [from, to) с шагом step
 rangeTo :: Integer -> Integer -> Integer -> [Integer]
 rangeTo from to step = unfoldr foo from
   where
     foo acc | acc < to = Just (acc, acc + step)
-    foo _ = Nothing
+    foo _              = Nothing
 
 -- Конкатенация двух списков
 append :: [a] -> [a] -> [a]
@@ -71,4 +80,10 @@ append a b = foldr( \x a -> x:a ) b a
 -- Разбиение списка lst на куски размером n
 -- (последний кусок может быть меньше)
 groups :: [a] -> Integer -> [[a]]
-groups lst n = todo
+groups _   n | n < 1 = error "Invalid group length"
+groups lst n = reverse $ fst $ foldl foo ([], 0) lst
+  where
+    foo ( [] , _       ) x = ( [[x]], 1 )
+    foo ( h:t, counter ) x
+      | counter == n = ( [[x]] ++ (h:t), 1 )
+      | otherwise    = ( (h ++ [x]):t  , counter + 1 )

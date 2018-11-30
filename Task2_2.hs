@@ -48,17 +48,14 @@ catMaybes lst = foldl f [] lst
 diagonal :: [[a]] -> [a]
 diagonal m = fst $ foldl foo ([], 0) m
   where
-    foo (result, n) lst
-      | (length lst) <= n = (result, n) -- если матрица прямоугольная и ширина меньше высоты
-      | otherwise         = (result ++ [lst !! n], (n + 1))
-    length list = foldl (\ n _ -> 1 + n) 0 list
+    foo (result, n) lst = (result ++ [lst !! n], n + 1)
 
 -- Фильтр для всех элементов, не соответствующих предикату
 filterNot :: (a -> Bool) -> [a] -> [a]
-filterNot foo (h:t) =
-  case (foo h) of
-    True  -> h : filterNot foo t
-    False ->     filterNot foo t
+filterNot f lst = foldl foo [] lst
+  where
+    foo acc x = if (f x) then acc else (x: acc)
+    -- не удовлетворяет => должен попасть в результат?
 
 -- Поиск элемента в списке
 elem :: (Eq a) => a -> [a] -> Bool

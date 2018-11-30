@@ -1,7 +1,5 @@
 module Task3_3 where
 
-import Data.Coerce
-
 -- множество = некая функция принадлежности произвольного элемента к воображаемому множеству?
 newtype PSet a = PSet{ contains :: (a -> Bool) }
 

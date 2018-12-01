@@ -52,9 +52,9 @@ diagonal m = fst $ foldl foo ([], 0) m
 
 -- Фильтр для всех элементов, не соответствующих предикату
 filterNot :: (a -> Bool) -> [a] -> [a]
-filterNot f lst = foldl foo [] lst
+filterNot f lst = foldr foo [] lst
   where
-    foo acc x = if (f x) then acc else (x: acc)
+    foo x acc = if (f x) then acc else (x: acc)
     -- не удовлетворяет => должен попасть в результат?
 
 -- Поиск элемента в списке
@@ -72,7 +72,7 @@ rangeTo from to step = unfoldr foo from
 
 -- Конкатенация двух списков
 append :: [a] -> [a] -> [a]
-append a b = foldr( \x a -> x:a ) b a
+append a b = foldr( \x a -> x:a ) a b
 
 -- Разбиение списка lst на куски размером n
 -- (последний кусок может быть меньше)

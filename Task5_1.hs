@@ -30,10 +30,29 @@ list2dlist' left (h: t) =
     in rec
 
 index :: DList a -> Int -> a
-index = todo
+-- index list i
+index  DNil         _ = error "Empty list or wrong index"
+index (DCons _ c _) 0 = c
+index (DCons l _ _) i | i < 0 = index l $ i + 1
+index (DCons _ _ r) i | i > 0 = index r $ i - 1
+
+goLeft      DNil = error
+goLeft lst@(DCons DNil _ _) = lst
+goLeft      DCons l    _ _  = goLeft l
 
 insertAt :: DList a -> Int -> a -> DList a
-insertAt list index value = todo
+-- insertAt list index value
+insertAt  DNil         _ _         = error "Empty list or wrong index"
+insertAt (DCons l _ _) i v | i < 0 = insertAt l (i + 1) v
+insertAt (DCons _ _ r) i v | i > 0 = insertAt r (i - 1) v
+insertAt (DCons l c r) 0 v = goLeft DCons left value right
+  where
+    left  = todo
+    right = todo
 
 removeAt :: DList a -> Int -> DList a
-removeAt list index = todo
+-- removeAt list index
+removeAt  DNil               _     = error "Empty list"
+removeAt (DCons DNil _ r   ) 0     = r
+removeAt (DCons l    _ DNil) 0     = l
+removeAt (DCons l    _ r   ) index = goLeft todo

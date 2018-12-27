@@ -42,11 +42,13 @@ instance Monoid (ReverseList a) where
   -- пустой список
   mempty = RNil
 
-  -- добавить один список к другому (превращаем второй список в массив и добавляем в конец)
+  -- добавить один список к другому
   mappend RNil RNil = RNil
   mappend RNil a = a
   mappend a RNil = a
-  mappend a b = foldr (\elem acc -> RCons acc elem) a (rlistToList b)
+  -- mappend a b = foldr (\elem acc -> RCons acc elem) a (rlistToList b)
+  mappend a (RCons RNil v) = RCons a v
+  mappend a (RCons head v) = RCons (mappend a head) v
 
 instance Functor ReverseList where
   fmap _ RNil = RNil

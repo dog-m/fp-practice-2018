@@ -15,13 +15,23 @@ type Parser a = Parsec String () a
 digit :: Parser Char
 digit = oneOf $ ['0'..'9']
 
-number :: Parser Integer
+(<++>) a b = (++) <$> a <*> b
+(<:>) a b = (:) <$> a <*> b
+
+floatNumber :: Parser Double
+floatNumber = do
+  a <- many1 digit
+  dot <- char '.'
+  b <- many1 digit
+  return $ read <$> a <++> dot <++> b   --- char '.' <:> number
+
+number :: Parser Double
 number = read <$> many1 digit
 
 byNumber ::  Char 
-          -> (Integer -> Integer -> Integer) 
-          -> Parser Integer
-          -> Parser (Integer -> Integer)
+          -> (Double -> Double -> Double) 
+          -> Parser Double
+          -> Parser (Double -> Double)
 byNumber symbol func base =
   do
     char symbol
@@ -30,13 +40,13 @@ byNumber symbol func base =
     spaces
     return $ (`func` n)
 
-multNumber :: Parser (Integer -> Integer)
+multNumber :: Parser (Double -> Double)
 multNumber = byNumber '*' (*) expr
 
-divNumber :: Parser (Integer -> Integer)
+divNumber :: Parser (Double -> Double)
 divNumber = byNumber '/' div expr
 
-multiplication :: Parser Integer
+multiplication :: Parser Double
 multiplication =
   do
     x <- expr
@@ -44,13 +54,13 @@ multiplication =
     ys <- many (multNumber <|> divNumber)
     return $ foldl (\ x f -> f x) x ys
 
-plusNumber :: Parser (Integer -> Integer)
+plusNumber :: Parser (Double -> Double)
 plusNumber = byNumber '+' (+) multiplication
 
-minusNumber :: Parser (Integer -> Integer)
+minusNumber :: Parser (Double -> Double)
 minusNumber = byNumber '-' (-) multiplication
 
-addition :: Parser Integer
+addition :: Parser Double
 addition =
   do
     x <- multiplication
@@ -58,17 +68,21 @@ addition =
     ys <- many (plusNumber <|> minusNumber)
     return $ foldl (\ x f -> f x) x ys
 
-expr :: Parser Integer
+expr :: Parser Double
 expr =
-  number <|>  do 
-                char '('
-                spaces
-                res <- addition
-                char ')'
-                spaces
-                return $ res
+  floatNumber <|> number <|> expression
 
-root :: Parser Integer
+expression :: Parser Double
+expression =
+  do
+    char '('
+    spaces
+    res <- addition
+    char ')'
+    spaces
+    return $ res
+
+root :: Parser Double
 root =
   do
     spaces

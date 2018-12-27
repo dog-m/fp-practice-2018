@@ -1,9 +1,9 @@
 {-
 представлен парсер, разработанный нами на лекции.
 Модифицируйте его таким образом, чтобы он поддерживал:
-  * Числа с плавающей точкой
+  + Числа с плавающей точкой
   * Операцию унарного минуса
-  * Операцию возведения в степень
+  + Операцию возведения в степень
 -}
 
 module Task8 where
@@ -18,15 +18,17 @@ digit = oneOf $ ['0'..'9']
 (<++>) a b = (++) <$> a <*> b
 (<:>) a b = (:) <$> a <*> b
 
-floatNumber :: Parser Double
-floatNumber = do
-  a <- many1 digit
-  dot <- char '.'
-  b <- many1 digit
-  return $ read <$> a <++> dot <++> b   --- char '.' <:> number
+fraction :: Parser String
+fraction = do
+  char '.'
+  f <- many1 digit
+  return $ "." ++ f
 
 number :: Parser Double
-number = read <$> many1 digit
+number = do
+  a <- many1 digit
+  frac <- option "" fraction
+  return $ read $ a ++ frac
 
 byNumber ::  Char 
           -> (Double -> Double -> Double) 
@@ -44,14 +46,17 @@ multNumber :: Parser (Double -> Double)
 multNumber = byNumber '*' (*) expr
 
 divNumber :: Parser (Double -> Double)
-divNumber = byNumber '/' div expr
+divNumber = byNumber '/' (/) expr
+
+powNumber :: Parser (Double -> Double)
+powNumber = byNumber '^' (**) expr
 
 multiplication :: Parser Double
 multiplication =
   do
     x <- expr
     spaces
-    ys <- many (multNumber <|> divNumber)
+    ys <- many (multNumber <|> divNumber <|> powNumber)
     return $ foldl (\ x f -> f x) x ys
 
 plusNumber :: Parser (Double -> Double)
@@ -70,7 +75,7 @@ addition =
 
 expr :: Parser Double
 expr =
-  floatNumber <|> number <|> expression
+  number <|> expression
 
 expression :: Parser Double
 expression =
@@ -94,4 +99,4 @@ main =
   do
     s <- getLine
     putStrLn $ show $ parse root "<input>" s
-    --main
+    -- main

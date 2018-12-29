@@ -101,7 +101,7 @@ instance Integral WeirdPeanoNumber where
 
   quotRem a b = case (signum ca, signum cb) of
     (     _, Zero  ) -> error "Division by zero!"
-    (Zero _,      _) -> (Zero    , Zero)
+    (Zero  ,      _) -> (Zero    , Zero)
     (Succ _, Succ _) -> (q, r)
     (Succ _, Pred _) -> (negate q, r)
     (Pred _, Pred _) -> (q, negate r)

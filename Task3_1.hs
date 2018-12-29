@@ -99,9 +99,9 @@ instance Real WeirdPeanoNumber where
 instance Integral WeirdPeanoNumber where
   toInteger x = toInteger $ fst $ evaluateAndCount x
 
-  quotRem _ Zero = error "Division by zero!"
-  quotRem Zero _ = (Zero    , Zero)
   quotRem a b = case (signum ca, signum cb) of
+    (     _, Zero  ) -> error "Division by zero!"
+    (Zero _,      _) -> (Zero    , Zero)
     (Succ _, Succ _) -> (q, r)
     (Succ _, Pred _) -> (negate q, r)
     (Pred _, Pred _) -> (q, negate r)

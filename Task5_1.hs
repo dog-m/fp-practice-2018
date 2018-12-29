@@ -45,7 +45,7 @@ insertAt :: DList a -> Int -> a -> DList a
 insertAt  DNil         _ _         = error "Empty list or wrong index"
 insertAt (DCons l _ _) i v | i < 0 = insertAt l (i + 1) v
 insertAt (DCons _ _ r) i v | i > 0 = insertAt r (i - 1) v
-insertAt (DCons l c r) 0 v = goLeft DCons left value right
+insertAt (DCons l c r) 0 v = goLeft DCons left v right
   where
     left  = todo
     right = todo

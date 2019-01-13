@@ -43,20 +43,27 @@ byNumber symbol func base = do
   spaces
   return $ (`func` n)
 
-multNumber :: Parser (Double -> Double)
-multNumber = byNumber '*' (*) expr
-
-divNumber :: Parser (Double -> Double)
-divNumber = byNumber '/' (/) expr
-
 powNumber :: Parser (Double -> Double)
 powNumber = byNumber '^' (**) expr
 
-multiplication :: Parser Double
-multiplication = do
+power :: Parser Double
+power = do
   x <- expr
   spaces
-  ys <- many (multNumber <|> divNumber <|> powNumber)
+  ys <- many (powNumber)
+  return $ foldl (\ x f -> f x) x ys
+
+multNumber :: Parser (Double -> Double)
+multNumber = byNumber '*' (*) power
+
+divNumber :: Parser (Double -> Double)
+divNumber = byNumber '/' (/) power
+
+multiplication :: Parser Double
+multiplication = do
+  x <- power
+  spaces
+  ys <- many (multNumber <|> divNumber)
   return $ foldl (\ x f -> f x) x ys
 
 plusNumber :: Parser (Double -> Double)
